@@ -1,0 +1,16 @@
+{
+  "name": "Python Dev Container",
+  "image": "apache/spark:latest",
+  "remoteUser": "vscode",
+  "features": {},
+  "postCreateCommand": "",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+           ]
+    }
+  },
+  "postStartCommand": "if [ -d \"$HOME/.vscode-server\" ]; then rm -rf \"$HOME/.vscode-server\"; fi"
+}
