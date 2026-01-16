@@ -1,0 +1,31 @@
+# Following are the commands for windows os, to open common firewall ports used by spark
+
+netsh advfirewall firewall add rule name="spark-4040" dir=in action=allow protocol=TCP localport=4040
+netsh advfirewall firewall add rule name="spark-7077" dir=in action=allow protocol=TCP localport=7077
+netsh advfirewall firewall add rule name="spark-8081" dir=in action=allow protocol=TCP localport=8081
+
+https://github.com/apache/spark-docker/blob/master/OVERVIEW.md#environment-variable
+
+
+# running spark containers individually
+docker run -it --name spark-master apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+docker run -it apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+
+# running spark environment as a docker compose application
+docker compose up -d # if compose file is named as docker-compose.yaml
+docker compose -f spark-compose.yaml up -d #if compose file is not using the default name
+
+# get list of containers running
+docker compose -f spark-compose.yaml ps #first retreive list of containers
+
+#running pyspark shell inside the running spark container
+# use container id retreived in the previous command
+docker exec -it <container_name_or_id> /opt/spark/bin/pyspark
+
+>>> spark.range(1000 * 1000 * 1000).count()
+
+# to connect from vscode
+install jdk
+install python packages from requirements.txt
+
+

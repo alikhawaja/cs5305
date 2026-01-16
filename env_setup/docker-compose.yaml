@@ -1,6 +1,6 @@
 services:
   spark-master:
-    image: apache/spark
+    image: apache/spark:latest
     container_name: spark-master
     hostname: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
