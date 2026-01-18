@@ -4,7 +4,7 @@ from pyspark.sql.functions import col, explode, split
 # Create Spark session
 spark = SparkSession.builder \
     .appName("WordCount") \
-    .master("spark://spark-master:7077") \
+    .master("spark://localhost:7077") \
     .getOrCreate()
 
 # Sample data

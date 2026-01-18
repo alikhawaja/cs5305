@@ -1,8 +1,11 @@
+ensure you are running python 3.10 for your spark environment
+
 # Following are the commands for windows os, to open common firewall ports used by spark
 
 netsh advfirewall firewall add rule name="spark-4040" dir=in action=allow protocol=TCP localport=4040
 netsh advfirewall firewall add rule name="spark-7077" dir=in action=allow protocol=TCP localport=7077
 netsh advfirewall firewall add rule name="spark-8081" dir=in action=allow protocol=TCP localport=8081
+netsh advfirewall firewall add rule name="spark-8088" dir=in action=allow protocol=TCP localport=8088
 
 https://github.com/apache/spark-docker/blob/master/OVERVIEW.md#environment-variable
 
