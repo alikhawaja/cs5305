@@ -9,6 +9,8 @@ netsh advfirewall firewall add rule name="spark-8088" dir=in action=allow protoc
 
 https://github.com/apache/spark-docker/blob/master/OVERVIEW.md#environment-variable
 
+# if you want to run jupyter for spark environment
+docker pull quay.io/jupyter/pyspark-notebook:latest
 
 # running spark containers individually
 docker run -it --name spark-master apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
