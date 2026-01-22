@@ -1,0 +1,19 @@
+# Following are the commands for windows os, to open common firewall ports used by sql server
+
+netsh advfirewall firewall add rule name="SQL Server Ports" dir=in action=allow protocol=TCP localport=1433
+
+# running sql server container
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourStrong!Passw0rd" -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2025-latest
+
+# install mssql extension in vscode to connect to sql server instance running in the container
+# create new connection in vscode using the following details
+
+set any name for the profile
+Server: localhost,1433 
+Username: sa
+Password: YourStrong!Passw0rd
+Accept Server Certificate: Yes
+# you should be able to connect to the sql server instance now
+
+# runing sql server using docker compose firewall
+docker compose -f sqlsrv-compose.yaml up -d

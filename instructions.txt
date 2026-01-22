@@ -1,31 +1,24 @@
 ensure you are running python 3.10 with jdk 21 for your spark environment
 
-# Following are the commands for windows os, to open common firewall ports used by spark
+# Following are the commands for windows os, to open common firewall ports used by spark and jupyter
 
 netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040,7077,8081
-netsh advfirewall firewall add rule name="SQL Server Ports" dir=in action=allow protocol=TCP localport=1433
 netsh advfirewall firewall add rule name="Jupyter Notebook Ports" dir=in action=allow protocol=TCP localport=8888
-
-
-https://github.com/apache/spark-docker/blob/master/OVERVIEW.md#environment-variable
-
-# if you want to run jupyter for spark environment
-docker pull jupyter/all-spark-notebook:python-3.10.11
 
 # running spark containers individually
 docker run -it --name spark-master apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
 docker run -it apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
 
 # running spark environment as a docker compose application
-docker compose up -d # if compose file is named as docker-compose.yaml
-docker compose -f spark-compose.yaml up -d #if compose file is not using the default name
+docker compose -f docker-compose.yaml up -d
 
 # get list of containers running
-docker compose -f spark-compose.yaml ps #first retreive list of containers
+docker compose -f docker-compose.yaml ps #first retreive list of containers
 
 #running pyspark shell inside the running spark container
-# use container id retreived in the previous command
-docker exec -it <container_name_or_id> /opt/spark/bin/pyspark
+docker exec -it <container_name_or_id> /opt/spark/bin/pyspark # use container id retreived in the previous command
+
+# example pyspark command to test the setup
 
 >>> spark.range(1000 * 1000 * 1000).count()
 
