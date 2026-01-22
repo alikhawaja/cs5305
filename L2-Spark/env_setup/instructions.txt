@@ -1,16 +1,16 @@
-ensure you are running python 3.10 for your spark environment
+ensure you are running python 3.10 with jdk 21 for your spark environment
 
 # Following are the commands for windows os, to open common firewall ports used by spark
 
-netsh advfirewall firewall add rule name="spark-4040" dir=in action=allow protocol=TCP localport=4040
-netsh advfirewall firewall add rule name="spark-7077" dir=in action=allow protocol=TCP localport=7077
-netsh advfirewall firewall add rule name="spark-8081" dir=in action=allow protocol=TCP localport=8081
-netsh advfirewall firewall add rule name="spark-8088" dir=in action=allow protocol=TCP localport=8088
+netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040,7077,8081
+netsh advfirewall firewall add rule name="SQL Server Ports" dir=in action=allow protocol=TCP localport=1433
+netsh advfirewall firewall add rule name="Jupyter Notebook Ports" dir=in action=allow protocol=TCP localport=8888
+
 
 https://github.com/apache/spark-docker/blob/master/OVERVIEW.md#environment-variable
 
 # if you want to run jupyter for spark environment
-docker pull quay.io/jupyter/pyspark-notebook:latest
+docker pull jupyter/all-spark-notebook:python-3.10.11
 
 # running spark containers individually
 docker run -it --name spark-master apache/spark /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master

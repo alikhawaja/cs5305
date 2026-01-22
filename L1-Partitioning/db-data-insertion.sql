@@ -1,73 +1,36 @@
--- Get the last OrderID from the table
-DECLARE @LastOrderID INT;
-SELECT @LastOrderID = ISNULL(MAX(OrderID), 0) FROM Orders;
-PRINT 'Last OrderID: ' + CAST(@LastOrderID AS VARCHAR(20));
+-- Insert data into each partition
+USE cs5305;
+GO
 
--- Insert rows into partition 1 (1000 rows)
-;WITH Numbers AS (
-    SELECT TOP 100000 ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
-    FROM sys.all_objects a CROSS JOIN sys.all_objects b
-)
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus)
-SELECT 
-    @LastOrderID + n,
-    ABS(CHECKSUM(NEWID())) % 1000,
-    DATEADD(DAY, ABS(CHECKSUM(NEWID())) % 365, '2023-01-01'),
-    CAST(ABS(CHECKSUM(NEWID())) % 10000 AS DECIMAL(10,2)),
-    CASE n % 4 WHEN 0 THEN 'Pending' WHEN 1 THEN 'Shipped' WHEN 2 THEN 'Delivered' ELSE 'Cancelled' END
-FROM Numbers
-WHERE n <= 1000;
+-- Insert 5 rows into Partition 1 (OrderID <= 100000)
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus) VALUES
+(1, 101, '2024-01-01', 150.50, 'Completed'),
+(2, 102, '2024-01-02', 275.75, 'Pending'),
+(3, 103, '2024-01-03', 89.99, 'Shipped'),
+(4, 104, '2024-01-04', 420.00, 'Processing'),
+(5, 105, '2024-01-05', 199.25, 'Completed');
 
--- Update @LastOrderID after first insert
-SET @LastOrderID = @LastOrderID + 1000;
+-- Insert 5 rows into Partition 2 (100001 <= OrderID <= 200000)
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus) VALUES
+(150000, 201, '2024-02-01', 325.50, 'Completed'),
+(150001, 202, '2024-02-02', 180.75, 'Pending'),
+(150002, 203, '2024-02-03', 450.99, 'Shipped'),
+(150003, 204, '2024-02-04', 720.00, 'Processing'),
+(150004, 205, '2024-02-05', 299.25, 'Completed');
 
--- Insert 100k rows into partition 2
-;WITH Numbers AS (
-    SELECT TOP 100000 ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
-    FROM sys.all_objects a CROSS JOIN sys.all_objects b
-)
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus)
-SELECT 
-    @LastOrderID + n,
-    ABS(CHECKSUM(NEWID())) % 1000,
-    DATEADD(DAY, ABS(CHECKSUM(NEWID())) % 365, '2023-01-01'),
-    CAST(ABS(CHECKSUM(NEWID())) % 10000 AS DECIMAL(10,2)),
-    CASE n % 4 WHEN 0 THEN 'Pending' WHEN 1 THEN 'Shipped' WHEN 2 THEN 'Delivered' ELSE 'Cancelled' END
-FROM Numbers
-WHERE n <= 100000;
+-- Insert 5 rows into Partition 3 (200001 <= OrderID <= 300000)
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus) VALUES
+(250000, 301, '2024-03-01', 125.50, 'Completed'),
+(250001, 302, '2024-03-02', 380.75, 'Pending'),
+(250002, 303, '2024-03-03', 650.99, 'Shipped'),
+(250003, 304, '2024-03-04', 220.00, 'Processing'),
+(250004, 305, '2024-03-05', 399.25, 'Completed');
 
--- Update @LastOrderID after second insert
-SET @LastOrderID = @LastOrderID + 10000;
-
--- Insert 100k rows into partition 3
-;WITH Numbers AS (
-    SELECT TOP 100000 ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
-    FROM sys.all_objects a CROSS JOIN sys.all_objects b
-)
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus)
-SELECT 
-    @LastOrderID + n,
-    ABS(CHECKSUM(NEWID())) % 10000,
-    DATEADD(DAY, ABS(CHECKSUM(NEWID())) % 365, '2023-01-01'),
-    CAST(ABS(CHECKSUM(NEWID())) % 10000 AS DECIMAL(10,2)),
-    CASE n % 4 WHEN 0 THEN 'Pending' WHEN 1 THEN 'Shipped' WHEN 2 THEN 'Delivered' ELSE 'Cancelled' END
-FROM Numbers
-WHERE n <= 100000;
-
--- Update @LastOrderID after third insert
-SET @LastOrderID = @LastOrderID + 100000;
-
--- Insert 100k rows into partition 4
-;WITH Numbers AS (
-    SELECT TOP 100000 ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
-    FROM sys.all_objects a CROSS JOIN sys.all_objects b
-)
-INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus)
-SELECT 
-    @LastOrderID + n,
-    ABS(CHECKSUM(NEWID())) % 10000,
-    DATEADD(DAY, ABS(CHECKSUM(NEWID())) % 365, '2023-01-01'),
-    CAST(ABS(CHECKSUM(NEWID())) % 10000 AS DECIMAL(10,2)),
-    CASE n % 4 WHEN 0 THEN 'Pending' WHEN 1 THEN 'Shipped' WHEN 2 THEN 'Delivered' ELSE 'Cancelled' END
-FROM Numbers
-WHERE n <= 100000;
+-- Insert 5 rows into Partition 4 (OrderID > 300000)
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount, OrderStatus) VALUES
+(350000, 401, '2024-04-01', 525.50, 'Completed'),
+(350001, 402, '2024-04-02', 680.75, 'Pending'),
+(350002, 403, '2024-04-03', 850.99, 'Shipped'),
+(350003, 404, '2024-04-04', 920.00, 'Processing'),
+(350004, 405, '2024-04-05', 599.25, 'Completed');
+GO

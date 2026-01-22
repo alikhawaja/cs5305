@@ -32,3 +32,18 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
+
+  jupyter:
+    image: jupyter/all-spark-notebook:python-3.10.11
+    container_name: jupyter-pyspark
+    hostname: jupyter
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    ports:
+      - '8888:8888' # Jupyter Web UI
+    depends_on:
+      - spark-master
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+      - ./spark-apps:/opt/spark-apps
+      - ./spark-data:/opt/spark-data
