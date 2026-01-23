@@ -1,49 +1,61 @@
+
 services:
   spark-master:
     image: apache/spark:latest
     container_name: spark-master
     hostname: spark-master
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    command: >
+      bash -lc "
+      /opt/spark/sbin/start-master.sh &&
+      tail -f /opt/spark/logs/*master*.out"
     environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_HOST=spark-master
-      - SPARK_MASTER_PORT=7077
-      - SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_NO_DAEMONIZE=true
     ports:
-      - '8080:8080' # Master Web UI
-      - '7077:7077' # Master Port
-    volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
+      - "7077:7077"   # Standalone master RPC
+      - "8080:8080"   # Master UI
+    networks:
+      - sparknet
 
-  spark-worker:
+  spark-worker-1:
     image: apache/spark:latest
-    container_name: spark-worker
-    hostname: spark-worker
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - SPARK_WORKER_CORES=2
-      - SPARK_WORKER_MEMORY=4g
-      - SPARK_WORKER_WEBUI_PORT=8081
-    ports:
-      - '8081:8081' # Worker Web UI
+    container_name: spark-worker-1
+    hostname: spark-worker-1
     depends_on:
       - spark-master
-    volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
+    command: >
+      bash -lc "
+      /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
+      tail -f /opt/spark/logs/*worker*.out"
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    ports:
+      - "8081:8081"   # Worker UI (optional)
+    networks:
+      - sparknet
 
-  jupyter:
-    image: jupyter/all-spark-notebook:python-3.10.11
-    container_name: jupyter-pyspark
-    hostname: jupyter
-    environment:
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    ports:
-      - '8888:8888' # Jupyter Web UI
+  spark-connect:
+    image: apache/spark:latest
+    container_name: spark-connect
+    hostname: spark-connect
     depends_on:
       - spark-master
-    volumes:
-      - ./notebooks:/home/jovyan/notebooks
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
+      - spark-worker-1
+    command: >
+      bash -lc "
+      /opt/spark/sbin/start-connect-server.sh
+        --master spark://spark-master:7077
+        --conf spark.connect.grpc.binding.address=0.0.0.0
+        --conf spark.connect.grpc.binding.port=15002
+      &&
+      tail -f /opt/spark/logs/*connect*.out"
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    ports:
+      - "15002:15002" # Spark Connect gRPC
+      - "4040:4040"   # First Spark app UI (optional; may increment)
+    networks:
+      - sparknet
+
+networks:
+  sparknet:
+    driver: bridge
