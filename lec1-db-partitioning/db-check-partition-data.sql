@@ -1,3 +1,5 @@
+use cs5305;
+GO
 -- Verify partition information
 SELECT 
     p.partition_number,

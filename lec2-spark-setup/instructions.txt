@@ -1,11 +1,11 @@
-# Following are the commands for windows os, to open common firewall ports used by spark
+1. Following are the commands for windows os, to open common firewall ports used by spark
 netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040,7077,8081,15002
 
-# running spark environment as a docker compose application (make sure docker is running)
+2. go to env_setup folder and start the docker compose command(make sure docker is running)
 docker compose -f docker-compose.yaml up -d
 
-setup python virtual environment by running the bat file which will install all required packages
-run your notebooks using the newly created virtual environments
+3. setup python virtual environment by running the bat file which will install all required packages
+4. run your notebooks using the newly created virtual environments
 
 
 

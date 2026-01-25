@@ -26,8 +26,14 @@ GO
 
 -- Add files to each filegroup
 ALTER DATABASE cs5305 ADD FILE (
-    NAME = 'cs5305_FG1',
-    FILENAME = '/var/opt/mssql/data/cs5305_FG1.ndf',
+    NAME = 'cs5305_FG1_file1',
+    FILENAME = '/var/opt/mssql/data/cs5305_FG1_F1.ndf',
+    SIZE = 5MB,
+    FILEGROWTH = 5MB
+),
+(
+    NAME = 'cs5305_FG1_file2',
+    FILENAME = '/var/opt/mssql/data/cs5305_FG1_F2.ndf',
     SIZE = 5MB,
     FILEGROWTH = 5MB
 ) TO FILEGROUP FG1;
