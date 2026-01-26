@@ -1,4 +1,3 @@
-
 services:
   spark-master:
     image: apache/spark:latest
@@ -13,6 +12,8 @@ services:
     ports:
       - "7077:7077"   # Standalone master RPC
       - "8080:8080"   # Master UI
+    volumes:
+      - ./spark-data:/opt/spark/data
     networks:
       - sparknet
 
@@ -30,6 +31,8 @@ services:
       - SPARK_NO_DAEMONIZE=true
     ports:
       - "8081:8081"   # Worker UI (optional)
+    volumes:
+      - ./spark_data:/opt/spark/data
     networks:
       - sparknet
   spark-worker-2:
@@ -46,29 +49,27 @@ services:
       - SPARK_NO_DAEMONIZE=true
     ports:
       - "8082:8081"   # Worker UI (optional)
+    volumes:
+      - ./spark-data:/opt/spark/data
     networks:
       - sparknet
 
-  spark-connect:
+  spark-connect-server:
     image: apache/spark:latest
-    container_name: spark-connect
-    hostname: spark-connect
+    container_name: spark-connect-server
+    hostname: spark-connect-server
     depends_on:
       - spark-master
-      - spark-worker-1
     command: >
       bash -lc "
-      /opt/spark/sbin/start-connect-server.sh
-        --master spark://spark-master:7077
-        --conf spark.connect.grpc.binding.address=0.0.0.0
-        --conf spark.connect.grpc.binding.port=15002
-      &&
+      /opt/spark/sbin/start-connect-server.sh --master spark://spark-master:7077 &&
       tail -f /opt/spark/logs/*connect*.out"
     environment:
       - SPARK_NO_DAEMONIZE=true
     ports:
-      - "15002:15002" # Spark Connect gRPC
-      - "4040:4040"   # First Spark app UI (optional; may increment)
+      - "15002:15002"   # Spark Connect server port
+    volumes:
+      - ./spark-data:/opt/spark/data
     networks:
       - sparknet
 
