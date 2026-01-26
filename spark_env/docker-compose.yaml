@@ -1,0 +1,50 @@
+services:
+  spark-master:
+    image: apache/spark:latest
+    container_name: spark-master
+    hostname: spark-master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - '8080:8080' # Master Web UI
+      - '7077:7077' # Master Port
+    volumes:
+      - ./spark-apps:/opt/spark-apps
+      - ./spark-data:/opt/spark-data
+
+  spark-worker:
+    image: apache/spark:latest
+    container_name: spark-worker
+    hostname: spark-worker
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=6g
+      - SPARK_WORKER_WEBUI_PORT=8081
+    ports:
+      - '8081:8081' # Worker Web UI
+    depends_on:
+      - spark-master
+    volumes:
+      - ./spark-apps:/opt/spark-apps
+      - ./spark-data:/opt/spark-data
+  jupyter-host:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter-host
+    hostname: jupyter-host
+    command: start-notebook.sh --NotebookApp.token=''
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - SPARK_MASTER=spark://spark-master:7077
+    ports:
+      - '8888:8888'
+    depends_on:
+      - spark-master
+      - spark-worker
+    volumes:
+      - ./spark-apps:/home/cs5305/work
+      - ./spark-data:/home/cs5305/data

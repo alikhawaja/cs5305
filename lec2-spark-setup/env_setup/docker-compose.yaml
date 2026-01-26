@@ -32,6 +32,22 @@ services:
       - "8081:8081"   # Worker UI (optional)
     networks:
       - sparknet
+  spark-worker-2:
+    image: apache/spark:latest
+    container_name: spark-worker-2
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    command: >
+      bash -lc "
+      /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
+      tail -f /opt/spark/logs/*worker*.out"
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    ports:
+      - "8082:8081"   # Worker UI (optional)
+    networks:
+      - sparknet
 
   spark-connect:
     image: apache/spark:latest
