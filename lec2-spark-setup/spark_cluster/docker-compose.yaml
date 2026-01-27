@@ -1,22 +1,22 @@
+
 services:
   spark-master:
     image: apache/spark:latest
     container_name: spark-master
     hostname: spark-master
-    command: >
-      bash -lc "
-      /opt/spark/sbin/start-master.sh &&
-      tail -f /opt/spark/logs/*master*.out"
+    command: /opt/spark/sbin/start-master.sh
     environment:
       - SPARK_NO_DAEMONIZE=true
+      - SPARK_MASTER_OPTS=-Dspark.eventLog.enabled=true -Dspark.eventLog.dir=/opt/spark/spark-events
     ports:
       - "7077:7077"   # Standalone master RPC
       - "8080:8080"   # Master UI
+      - "4040:4040"     # Application UI (optional)
     volumes:
       - ./spark-data:/opt/spark/data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - sparknet
-
   spark-worker-1:
     image: apache/spark:latest
     container_name: spark-worker-1
@@ -29,30 +29,17 @@ services:
       tail -f /opt/spark/logs/*worker*.out"
     environment:
       - SPARK_NO_DAEMONIZE=true
+      - SPARK_EXECUTOR_CORES=4
+      - SPARK_EXECUTOR_MEMORY=4g
+      - SPARK_WORKER_OPTS=-Dspark.eventLog.enabled=true -Dspark.eventLog.dir=/opt/spark/spark-events
     ports:
       - "8081:8081"   # Worker UI (optional)
     volumes:
-      - ./spark_data:/opt/spark/data
-    networks:
-      - sparknet
-  spark-worker-2:
-    image: apache/spark:latest
-    container_name: spark-worker-2
-    hostname: spark-worker-2
-    depends_on:
-      - spark-master
-    command: >
-      bash -lc "
-      /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
-      tail -f /opt/spark/logs/*worker*.out"
-    environment:
-      - SPARK_NO_DAEMONIZE=true
-    ports:
-      - "8082:8081"   # Worker UI (optional)
-    volumes:
       - ./spark-data:/opt/spark/data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - sparknet
+
 
   spark-connect-server:
     image: apache/spark:latest
@@ -60,16 +47,31 @@ services:
     hostname: spark-connect-server
     depends_on:
       - spark-master
-    command: >
-      bash -lc "
-      /opt/spark/sbin/start-connect-server.sh --master spark://spark-master:7077 &&
-      tail -f /opt/spark/logs/*connect*.out"
+    command: /opt/spark/sbin/start-connect-server.sh --master spark://spark-master:7077 --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=/opt/spark/spark-events
     environment:
       - SPARK_NO_DAEMONIZE=true
     ports:
       - "15002:15002"   # Spark Connect server port
     volumes:
       - ./spark-data:/opt/spark/data
+      - ./spark-events:/opt/spark/spark-events
+    networks:
+      - sparknet
+
+  spark-history-server:
+    image: apache/spark:latest
+    container_name: spark-history-server
+    hostname: spark-history-server
+    depends_on:
+      - spark-master
+    command: /opt/spark/sbin/start-history-server.sh --spark.history.fs.logDirectory=/opt/spark/spark-events
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    ports:
+      - "18080:18080"   # History server UI
+    volumes:
+      - ./spark-data:/opt/spark/data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - sparknet
 
