@@ -4,17 +4,17 @@ services:
     image: apache/spark:latest
     container_name: spark-master
     hostname: spark-master
-    command: /opt/spark/sbin/start-master.sh
+    command: /opt/spark/sbin/start-master.sh --properties-file /opt/spark/spark-conf/spark-master.conf
     environment:
       - SPARK_NO_DAEMONIZE=true
-      - SPARK_MASTER_OPTS=-Dspark.eventLog.enabled=true -Dspark.eventLog.dir=/opt/spark/spark-events
     ports:
       - "7077:7077"   # Standalone master RPC
       - "8080:8080"   # Master UI
-      - "4040:4040"     # Application UI (optional)
+      - "4040:4040"   # Application UI (optional)
     volumes:
       - ./spark-data:/opt/spark/data
       - ./spark-events:/opt/spark/spark-events
+      - ./spark-conf:/opt/spark/spark-conf
     networks:
       - sparknet
   spark-worker-1:
@@ -23,23 +23,43 @@ services:
     hostname: spark-worker-1
     depends_on:
       - spark-master
-    command: >
-      bash -lc "
-      /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
-      tail -f /opt/spark/logs/*worker*.out"
+    command: /opt/spark/sbin/start-worker.sh spark://spark-master:7077 
     environment:
       - SPARK_NO_DAEMONIZE=true
-      - SPARK_EXECUTOR_CORES=4
-      - SPARK_EXECUTOR_MEMORY=4g
-      - SPARK_WORKER_OPTS=-Dspark.eventLog.enabled=true -Dspark.eventLog.dir=/opt/spark/spark-events
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_WORKER_EVENT_LOG_DIR=/opt/spark/spark-events
+      - SPARK_WORKER_LOG_DIR=/opt/spark/worker-logs
     ports:
       - "8081:8081"   # Worker UI (optional)
     volumes:
       - ./spark-data:/opt/spark/data
       - ./spark-events:/opt/spark/spark-events
+      - ./spark-conf:/opt/spark/spark-conf
+      - ./worker-logs:/opt/spark/worker-logs
     networks:
       - sparknet
 
+  spark-worker-2:
+    image: apache/spark:latest
+    container_name: spark-worker-2
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    command: /opt/spark/sbin/start-worker.sh spark://spark-master:7077
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_WORKER_EVENT_LOG_DIR=/opt/spark/spark-events
+      - SPARK_WORKER_LOG_DIR=/opt/spark/worker-logs
+    ports:
+      - "8082:8082"   # Worker UI (optional)
+    volumes:
+      - ./spark-data:/opt/spark/data
+      - ./spark-events:/opt/spark/spark-events
+      - ./spark-conf:/opt/spark/spark-conf
+      - ./worker-logs:/opt/spark/worker-logs
+    networks:
+      - sparknet
 
   spark-connect-server:
     image: apache/spark:latest
@@ -47,7 +67,7 @@ services:
     hostname: spark-connect-server
     depends_on:
       - spark-master
-    command: /opt/spark/sbin/start-connect-server.sh --master spark://spark-master:7077 --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=/opt/spark/spark-events
+    command: /opt/spark/sbin/start-connect-server.sh --properties-file /opt/spark/spark-conf/spark-connect-server.conf
     environment:
       - SPARK_NO_DAEMONIZE=true
     ports:
@@ -55,6 +75,7 @@ services:
     volumes:
       - ./spark-data:/opt/spark/data
       - ./spark-events:/opt/spark/spark-events
+      - ./spark-conf:/opt/spark/spark-conf
     networks:
       - sparknet
 
@@ -64,7 +85,7 @@ services:
     hostname: spark-history-server
     depends_on:
       - spark-master
-    command: /opt/spark/sbin/start-history-server.sh --spark.history.fs.logDirectory=/opt/spark/spark-events
+    command: /opt/spark/sbin/start-history-server.sh  --properties-file /opt/spark/spark-conf/spark-history-server.conf
     environment:
       - SPARK_NO_DAEMONIZE=true
     ports:
@@ -72,6 +93,7 @@ services:
     volumes:
       - ./spark-data:/opt/spark/data
       - ./spark-events:/opt/spark/spark-events
+      - ./spark-conf:/opt/spark/spark-conf
     networks:
       - sparknet
 
