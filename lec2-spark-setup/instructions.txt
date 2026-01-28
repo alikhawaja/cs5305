@@ -7,6 +7,10 @@ docker compose -f docker-compose.yaml up -d
 3. setup python virtual environment by running the bat file which will install all required packages
 4. run your notebooks using the newly created virtual environments
 
+5. new york state has published their taxi data as parquet files, we have copied some of those files to the data folder.
+You can download that data using script from this github repo: https://github.com/toddwschneider/nyc-taxi-data
+
+
 Further information:
 
 The SPARK_NO_DAEMONIZE variable prevents Spark processes from daemonizing (forking into background processes). 
