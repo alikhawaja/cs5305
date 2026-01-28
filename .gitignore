@@ -1,3 +1,5 @@
 python310env/
 spark-data/
 spark-apps/
+spark-events/
+worker-logs/
