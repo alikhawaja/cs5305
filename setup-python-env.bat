@@ -72,7 +72,7 @@ echo.
 
 REM Step 5.1: Install Required packages for spark and Jupyter
 echo [Step 5.1] Installing required packages...
-pip install pyspark pyarrow ipykernel pandas matplotlib seaborn grpcio grpcio-status zstandard
+pip install pyspark pyarrow ipykernel pandas matplotlib seaborn grpcio grpcio-status zstandard request nbformat
 if %errorlevel% neq 0 (
     echo ERROR: Failed to install packages.
     exit /b 1

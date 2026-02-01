@@ -38,7 +38,7 @@ You should see `Python 3.10.11` in the output.
 
 ### 5.1. Install PySpark and IPyKernel
 ```cmd
-pip install pyspark pyarrow ipykernel pandas matplotlib seaborn grpcio grpcio-status zstandard
+pip install pyspark pyarrow ipykernel pandas matplotlib seaborn grpcio grpcio-status zstandard request nbformat
 ```
 
 ### 5.2. (Optional) Register the environment as a Jupyter kernel

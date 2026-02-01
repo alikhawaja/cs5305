@@ -1,3 +1,5 @@
 python310env/
 spark-apps/
 spark-events/
+*json*
+*.pyc
