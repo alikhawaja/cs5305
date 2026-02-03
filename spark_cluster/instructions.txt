@@ -1,0 +1,29 @@
+1. Following are the commands for windows os, to open common firewall ports used by spark
+netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040,7077,8081-8085,15002
+
+2. go to env_setup folder and start the docker compose command(make sure docker is running)
+docker compose -f docker-compose.yaml up -d
+
+3. setup python virtual environment by running the bat file which will install all required packages
+4. run your notebooks using the newly created virtual environments
+
+5. new york state has published their taxi data as parquet files, we have copied some of those files to the data folder.
+You can download that data using script from this github repo: https://github.com/toddwschneider/nyc-taxi-data
+
+
+Further information:
+
+The SPARK_NO_DAEMONIZE variable prevents Spark processes from daemonizing (forking into background processes). 
+In traditional server environments, Spark processes typically fork to the background and return control to the shell. 
+However, in Docker containers, this behavior is problematic.
+
+When a Docker container's main process exits, the container stops. 
+
+If Spark processes daemonize:
+    The entrypoint script starts the Spark process
+    The Spark process immediately forks to the background
+    The original process exits
+    Docker detects the process exit and stops the container
+    The backgrounded Spark process is killed
+    By setting SPARK_NO_DAEMONIZE=true, Spark processes remain in the foreground, keeping the container alive.
+

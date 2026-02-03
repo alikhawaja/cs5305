@@ -6,3 +6,5 @@ spark-events/
 fhv*
 green*
 yellow*
+delta-tables/
+.ivy2/
