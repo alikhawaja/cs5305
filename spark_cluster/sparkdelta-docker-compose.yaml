@@ -1,12 +1,13 @@
 
 services:
   spark-master:
-    image: lums-spark:v1
+    image: delta-spark:4.0.1
     container_name: spark-master
     hostname: spark-master
     command: /opt/spark/sbin/start-master.sh --properties-file /opt/spark/spark-conf/spark-master.conf
     environment:
       - SPARK_NO_DAEMONIZE=true
+      - HADOOP_HOME=/opt/spark/hadoop
     ports:
       - "7077:7077"   # Standalone master RPC
       - "8080:8080"   # Master UI
@@ -18,10 +19,11 @@ services:
       - ../spark_cluster/warehouse:/opt/spark/warehouse
       - ../spark_cluster/.ivy2:/tmp/.ivy2.5.2
       - ../spark_cluster/delta-tables:/opt/spark/delta-tables
+      - ../spark_cluster/hadoop:/opt/spark/hadoop
     networks:
       - sparknet
   spark-worker-1:
-    image: lums-spark:v1
+    image: delta-spark:4.0.1
     container_name: spark-worker-1
     hostname: spark-worker-1
     depends_on:
@@ -45,7 +47,7 @@ services:
       - sparknet
 
   spark-worker-2:
-    image: lums-spark:v1
+    image: delta-spark:4.0.1
     container_name: spark-worker-2
     hostname: spark-worker-2
     depends_on:
@@ -69,7 +71,7 @@ services:
       - sparknet
 
   spark-connect-server:
-    image: lums-spark:v1
+    image: delta-spark:4.0.1
     container_name: spark-connect-server
     hostname: spark-connect-server
     depends_on:
@@ -91,7 +93,7 @@ services:
       - sparknet
 
   spark-history-server:
-    image: lums-spark:v1
+    image: delta-spark:4.0.1
     container_name: spark-history-server
     hostname: spark-history-server
     depends_on:

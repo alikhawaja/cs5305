@@ -8,3 +8,6 @@ green*
 yellow*
 delta-tables/
 .ivy2/
+part*
+*.crc
+*.pdb

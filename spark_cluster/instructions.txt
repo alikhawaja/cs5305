@@ -1,5 +1,5 @@
 1. Following are the commands for windows os, to open common firewall ports used by spark
-netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040,7077,8081-8085,15002
+netsh advfirewall firewall add rule name="Spark Ports" dir=in action=allow protocol=TCP localport=4040-4050,7077,8081-8085,15002
 
 2. go to env_setup folder and start the docker compose command(make sure docker is running)
 docker compose -f docker-compose.yaml up -d
