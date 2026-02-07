@@ -10,21 +10,6 @@ data/
 fhv*
 green*
 yellow*
-<<<<<<< Updated upstream
-=======
-python310env/
-spark-apps/
-spark-events/
-delta-tables/
-home/
-data/
-.ivy2/
-*json*
-*.pyc
-fhv*
-green*
-yellow*
->>>>>>> Stashed changes
 part*
 *.crc
 *.pdb
