@@ -10,8 +10,6 @@ data/
 fhv*
 green*
 yellow*
-<<<<<<< Updated upstream
-=======
 python310env/
 spark-apps/
 spark-events/
@@ -24,7 +22,6 @@ data/
 fhv*
 green*
 yellow*
->>>>>>> Stashed changes
 part*
 *.crc
 *.pdb
