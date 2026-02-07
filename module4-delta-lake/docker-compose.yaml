@@ -11,5 +11,5 @@ services:
       - "4040:4040"  # Spark UI
     volumes:
       - ./notebooks:/opt/spark/work-dir/notebooks
+      - ./home:/home
       - ./data:/tmp/delta-table
-      - ./data:/opt/spark/delta-tables
