@@ -19,4 +19,7 @@ yellow*
 part*
 *.crc
 *.pdb
-*.log
+venv/
+env/
+.venv/
+.env/
