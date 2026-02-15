@@ -10,6 +10,6 @@ services:
       - "8888-8889:8888-8889"  # Jupyter
       - "4040:4040"  # Spark UI
     volumes:
-      - ./notebooks:/opt/spark/work-dir/notebooks
+      - ../module4-delta-lake/notebooks:/opt/spark/work-dir/notebooks
       - ./home:/home
       - ./data:/tmp/delta-table

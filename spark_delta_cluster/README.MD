@@ -1,1 +1,0 @@
-not properly tested.  do not use this compose file.
