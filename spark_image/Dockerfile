@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install delta-spark python package
-RUN pip3 install delta-spark==4.0.1 
+RUN pip3 install pyspark==4.0.1 delta-spark==4.0.1
 
 # Create startup script that checks SPARK_MODE environment variable
 RUN mkdir -p /opt/spark/startup
