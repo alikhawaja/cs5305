@@ -14,3 +14,13 @@ ADD https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.0.1/delta-spark_2
 ADD https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.1/delta-storage-4.0.1.jar /opt/spark/jars/
 
 USER spark
+
+# Create entrypoint script for mode selection
+RUN mkdir -p /opt/scripts
+COPY entrypoint.sh /opt/scripts/entrypoint.sh
+RUN chmod +x /opt/scripts/entrypoint.sh
+
+# Set default Spark mode
+ENV SPARK_MODE=master
+
+ENTRYPOINT ["/opt/scripts/entrypoint.sh"]
