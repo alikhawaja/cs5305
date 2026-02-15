@@ -1,34 +1,34 @@
 
 services:
   spark-master:
-    image: delta-spark:4.0.1
+    image: delta-spark-4.0.1:v1
     container_name: spark-master
     hostname: spark-master
-    command: /opt/spark/sbin/start-master.sh --properties-file /opt/spark/spark-conf/spark-master.conf
     environment:
+      - SPARK_MODE=MASTER
       - SPARK_NO_DAEMONIZE=true
-      - HADOOP_HOME=/opt/spark/hadoop
     ports:
       - "7077:7077"   # Standalone master RPC
       - "8080:8080"   # Master UI
       - "4040:4040"   # Application UI (optional)
+      - "18080:18080"   # History server UI\
+      - "15002:15002"   # Spark Connect server port
+
     volumes:
       - ../spark_cluster/spark-data:/opt/spark/data
       - ../spark_cluster/spark-events:/opt/spark/spark-events
-      - ../spark_cluster/spark-conf:/opt/spark/spark-conf
+      - ../spark_cluster/spark-conf:/opt/spark/conf
       - ../spark_cluster/warehouse:/opt/spark/warehouse
       - ../spark_cluster/.ivy2:/tmp/.ivy2.5.2
       - ../spark_cluster/delta-tables:/opt/spark/delta-tables
-      - ../spark_cluster/hadoop:/opt/spark/hadoop
     networks:
       - sparknet
   spark-worker-1:
-    image: delta-spark:4.0.1
+    image: delta-spark-4.0.1:v1
     container_name: spark-worker-1
     hostname: spark-worker-1
     depends_on:
       - spark-master
-    command: /opt/spark/sbin/start-worker.sh --properties-file /opt/spark/spark-conf/spark-worker.conf spark://spark-master:7077
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_EVENTLOG_ENABLED=true
@@ -39,7 +39,7 @@ services:
     volumes:
       - ../spark_cluster/spark-data:/opt/spark/data
       - ../spark_cluster/spark-events:/opt/spark/spark-events
-      - ../spark_cluster/spark-conf:/opt/spark/spark-conf
+      - ../spark_cluster/spark-conf:/opt/spark/conf
       - ../spark_cluster/worker-logs:/opt/spark/worker-logs
       - ../spark_cluster/warehouse:/opt/spark/warehouse
       - ../spark_cluster/delta-tables:/opt/spark/delta-tables
@@ -47,12 +47,11 @@ services:
       - sparknet
 
   spark-worker-2:
-    image: delta-spark:4.0.1
+    image: delta-spark-4.0.1:v1
     container_name: spark-worker-2
     hostname: spark-worker-2
     depends_on:
       - spark-master
-    command: /opt/spark/sbin/start-worker.sh --properties-file /opt/spark/spark-conf/spark-worker.conf spark://spark-master:7077
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_EVENTLOG_ENABLED=true
@@ -63,51 +62,10 @@ services:
     volumes:
       - ../spark_cluster/spark-data:/opt/spark/data
       - ../spark_cluster/spark-events:/opt/spark/spark-events
-      - ../spark_cluster/spark-conf:/opt/spark/spark-conf
+      - ../spark_cluster/spark-conf:/opt/spark/conf
       - ../spark_cluster/worker-logs:/opt/spark/worker-logs
       - ../spark_cluster/warehouse:/opt/spark/warehouse
       - ../spark_cluster/delta-tables:/opt/spark/delta-tables
-    networks:
-      - sparknet
-
-  spark-connect-server:
-    image: delta-spark:4.0.1
-    container_name: spark-connect-server
-    hostname: spark-connect-server
-    depends_on:
-      - spark-master
-    command: /opt/spark/sbin/start-connect-server.sh --properties-file /opt/spark/spark-conf/spark-connect-server.conf
-    environment:
-      - SPARK_NO_DAEMONIZE=true
-    ports:
-      - "15002:15002"   # Spark Connect server port
-    volumes:
-      - ../spark_cluster/spark-data:/opt/spark/data
-      - ../spark_cluster/spark-events:/opt/spark/spark-events
-      - ../spark_cluster/spark-conf:/opt/spark/spark-conf
-      - ../spark_cluster/warehouse:/opt/spark/warehouse
-      - ../spark_cluster/.ivy2:/tmp/.ivy2.5.2
-      - ../spark_cluster/delta-tables:/opt/spark/delta-tables
-
-    networks:
-      - sparknet
-
-  spark-history-server:
-    image: delta-spark:4.0.1
-    container_name: spark-history-server
-    hostname: spark-history-server
-    depends_on:
-      - spark-master
-    command: /opt/spark/sbin/start-history-server.sh  --properties-file /opt/spark/spark-conf/spark-history-server.conf
-    environment:
-      - SPARK_NO_DAEMONIZE=true
-    ports:
-      - "18080:18080"   # History server UI
-    volumes:
-      - ../spark_cluster/spark-data:/opt/spark/data
-      - ../spark_cluster/spark-events:/opt/spark/spark-events
-      - ../spark_cluster/spark-conf:/opt/spark/spark-conf
-      - ../spark_cluster/.ivy2:/tmp/.ivy2.5.2
     networks:
       - sparknet
 
