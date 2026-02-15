@@ -2,6 +2,9 @@ FROM apache/spark:4.0.1-scala2.13-java21-python3-r-ubuntu
 
 USER root
 
+# Install sudo and common linux utilities
+RUN apt-get update && apt-get install -y sudo curl wget git vim nano htop netcat-openbsd net-tools iputils-ping dnsutils && rm -rf /var/lib/apt/lists/*
+
 # Install delta-spark python package
 RUN pip3 install delta-spark==4.0.1 
 
