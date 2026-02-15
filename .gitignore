@@ -2,6 +2,12 @@ python310env/
 spark-apps/
 spark-events/
 delta-tables/
+.ipynb_checkpoints/
+__pycache__/
+artifacts/
+logs/
+*.log
+python310env/
 home/
 data/
 .ivy2/
