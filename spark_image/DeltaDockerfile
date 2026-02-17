@@ -8,6 +8,10 @@ ENV DELTA_VERSION=4.0.1
 ENV PYTHON_VERSION=3.14
 ENV SCALA_VERSION=2.13
 ENV HOME=/home/spark
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin
+ENV PYSPARK_PYTHON=python3
+ENV SPARK_MODE=MASTER
 
 USER root
 
@@ -37,11 +41,6 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Environment Setup
-ENV SPARK_HOME=/opt/spark
-ENV PATH=$PATH:$SPARK_HOME/bin
-ENV PYSPARK_PYTHON=python3
-
 # 4. Install Delta Lake Python Bindings
 RUN pip3 install --no-cache-dir \
         delta-spark==${DELTA_VERSION} \
@@ -60,8 +59,6 @@ RUN /opt/spark/bin/spark-shell --packages \
     io.delta:delta-connect-server_2.13:${DELTA_VERSION},\
     org.apache.spark:spark-connect_2.13:${SPARK_VERSION} \
     --repositories https://repo1.maven.org/maven2/
-# Set default Spark mode
-ENV SPARK_MODE=master
 
 # Create startup script that checks SPARK_MODE environment variable
 RUN mkdir -p /opt/spark/startup
@@ -76,6 +73,8 @@ RUN groupadd -r spark && useradd -r -g spark -m -d /home/spark -s /bin/bash spar
 
 RUN mkdir -p /home/spark/.local/share/jupyter && \
         chown -R spark:spark /home/spark/.local/share/jupyter
+
+RUN chmod -R 777 $SPARK_HOME
 
 USER spark
 
