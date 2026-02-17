@@ -24,16 +24,13 @@ RUN apt-get update && apt-get install -y \
     netcat-openbsd \
     net-tools \
     iputils-ping \
-    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Install delta-spark python package
-RUN python3.13 -m pip install pyspark==4.0.1 delta-spark==4.0.1
+RUN python3.13 -m pip install pyspark==4.0.2 delta-spark==4.0.1
 # Install Jupyter Lab and IPython kernel
 RUN python3.13 -m pip install jupyter jupyterlab ipykernel
 
-# Pre-download Delta JARs to the Spark jars directory
-# This ensures Delta is available immediately on startup
 ADD https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.0.1/delta-spark_2.13-4.0.1.jar /opt/spark/jars/
 ADD https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.1/delta-storage-4.0.1.jar /opt/spark/jars/
 
@@ -44,8 +41,11 @@ ENV SPARK_MODE=master
 # Create startup script that checks SPARK_MODE environment variable
 RUN mkdir -p /opt/spark/startup
 COPY ./entrypoint.sh /opt/spark/startup/entrypoint.sh
-RUN dos2unix /opt/spark/startup/entrypoint.sh && \
-    chmod +x /opt/spark/startup/entrypoint.sh
+RUN chmod +x /opt/spark/startup/entrypoint.sh
+
+# Create home directory for spark user (needed for Jupyter)
+RUN mkdir -p /home/spark && chown -R spark:spark /home/spark
+ENV HOME=/home/spark
 
 USER spark
 
