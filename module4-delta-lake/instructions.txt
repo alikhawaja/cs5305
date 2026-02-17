@@ -1,0 +1,8 @@
+pip install delta-spark==4.0.1
+
+databricks
+----------
+
+%pip install dbdemos
+import dbdemos
+dbdemos.install('delta-lake')
