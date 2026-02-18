@@ -2,6 +2,11 @@ python310env/
 spark-apps/
 spark-events/
 delta-tables/
+spark-home/
+worker-data/
+worker-logs/
+warehouse/
+.ivy2/
 .ipynb_checkpoints/
 __pycache__/
 artifacts/
@@ -19,11 +24,6 @@ yellow*
 part*
 *.crc
 *.pdb
-.ipynb_checkpoints/
-__pycache__/
-artifacts/
-logs/
-*.log
 .venv/
 venv/
 env/

@@ -2,7 +2,7 @@
 FROM eclipse-temurin:21-jdk-jammy
 
 # Define Versions
-ENV SPARK_VERSION=4.1.1
+ENV SPARK_VERSION=4.0.1
 ENV HADOOP_VERSION=3
 ENV DELTA_VERSION=4.0.1
 ENV PYTHON_VERSION=3.14
@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
 # 4. Install Delta Lake Python Bindings
 RUN pip3 install --no-cache-dir \
         delta-spark==${DELTA_VERSION} \
-        pyspark[connect]==${SPARK_VERSION} \
+        pyspark==${SPARK_VERSION} \
         grpcio \
         protobuf \
         jupyter \
@@ -71,11 +71,11 @@ EXPOSE 4040 7077 8080 8888 15002
 RUN groupadd -r spark && useradd -r -g spark -m -d /home/spark -s /bin/bash spark && \
     chown -R spark:spark /opt/spark /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}
 
-RUN mkdir -p /home/spark/.local/share/jupyter && \
-        chown -R spark:spark /home/spark/.local/share/jupyter
+RUN mkdir -p /home/spark && chown -R spark:spark /home/spark/
 
 RUN chmod -R 777 $SPARK_HOME
 
-USER spark
+# Switch to root for entrypoint script (it will handle permissions and user switching)
+USER root
 
 ENTRYPOINT ["/opt/spark/startup/entrypoint.sh"]
