@@ -6,7 +6,7 @@ from pyspark.sql.functions import split
 spark = SparkSession \
             .builder \
             .appName("StructuredNetworkWordCount") \
-            .remote("sc://localhost:15002") \
+            .master("spark://localhost:7077") \
             .getOrCreate()
 
 # Create DataFrame representing the stream of input lines from connection to localhost:9999

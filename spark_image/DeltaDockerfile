@@ -33,6 +33,7 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-$
     
 # Install linux utilities
 RUN apt-get update && apt-get install -y \
+
     vim \
     curl \
     wget \
